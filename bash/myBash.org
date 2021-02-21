@@ -1,0 +1,743 @@
+#+TITLE: MyBash
+#+NAME: Mariii-23
+
+* Site:  [[https://youtu.be/e7BufAVwDiM][Bash Scripting Full Course]]
+* Hello Bash Scripting
+** Code
+#+begin_SRC bash
+#! /usr/bin/bash
+
+echo "Hello World"
+#+end_SRC
+
+#+RESULTS:
+: Hello World
+
+** Run script
+One or other:
+*** bash script
+You can run the script without an executable file.
+*** chmod +x script && ./script
+This makes the file executable. If this file you want to change permissions on is located within the systems directory you may need to be root.
+* Redirect to file
+** Send something to a file
+#+begin_SRC bash
+echo "Something" > file.txt
+
+# Everiything that we write something on the prompt after exit (Control+d), will be on file.txt. 
+cat > file.txt 
+#+end_SRC
+** Send some output
+#+begin_SRC bash
+#! /usr/bin/bash
+
+cat << information
+This is some informative text
+This is another line
+And this is the end
+information
+#+end_SRC
+
+#+RESULTS:
+| This | is   | some    | informative | text |
+| This | is   | another | line        |      |
+| And  | this | is      | the         | end  |
+
+* Comments
+** To added one comment use #
+** To added multiple comments use : 'comment'
+* Conditional statments
+** Operations
+*** or
++ -o
++ ||
+*** and
++ -a
++ &&
+** If and else if
+#+begin_SRC bash
+#! /usr/bin/bash
+
+count=10
+# Condition :
+if [ $count -eq 10 ] # count == 10
+# if [[ $count -eq 10 ]] # This work too
+then
+    echo "This is true"
+#if (( $count < 10 )) # count < 10
+elif (( $count <= 9 )) ; then
+    echo "Do Something"
+else
+    echo "Other something"
+fi
+#+end_SRC
+
+#+RESULTS:
+: This is true
+
+** If with multiple condictions
+#+begin_SRC bash
+#!/usr/bin/env bash
+
+age=10
+
+if [ "$age" -gt 18 ] && [ "$age" -lt 40 ] ; then
+ # (This works too)
+# if [[ "$age" -gt 18  &&  "$age" -lt 40 ]] ; then
+# if [ "$age" -gt 18  -a  "$age" -lt 40 ] ; then
+    echo "Do something"
+else
+    echo "Other something"
+fi
+#+end_SRC
+
+#+RESULTS:
+: Other something
+
+** Case statment
+#+begin_SRC bash
+#!/usr/bin/env bash
+
+EXPRESSION=$1 # 1º Argue
+
+case EXPRESSION in
+
+  PATTERN_1)
+    STATEMENTS
+    ;;
+
+  PATTERN_2)
+    STATEMENTS
+    ;;
+
+  PATTERN_N)
+    STATEMENTS
+    ;;
+
+  ,*)       # default
+    STATEMENTS
+    ;;
+esac
+
+
+#+end_SRC
+* Loops
+** While
+*** while
+While the condiction it's true do something
++ Code
+#+begin_SRC bash
+#!/usr/bin/env bash
+
+number=1
+
+while [[ $number -lt 10 ]] ; do
+    echo "$number"
+    number=$(( number+1 ))
+done
+#+end_SRC
+
+#+RESULTS:
+| 1 |
+| 2 |
+| 3 |
+| 4 |
+| 5 |
+| 6 |
+| 7 |
+| 8 |
+| 9 |
+
++ Result
+  #+begin_example
+    1
+    2
+    3
+    4
+    5
+    6
+    7
+    8
+    9
+ #+end_example
+
+*** Anti-loop
+Until the condiction is true do something
++ Code
+#+begin_SRC bash
+#!/usr/bin/env bash
+
+number=1
+
+until [[ $number -ge 10 ]] ; do
+    echo "$number"
+    number=$(( number+1 ))
+done
+
+#+end_SRC
+
+#+RESULTS:
+| 1 |
+| 2 |
+| 3 |
+| 4 |
+| 5 |
+| 6 |
+| 7 |
+| 8 |
+| 9 |
+
++ Result
+ #+begin_example
+    1
+    2
+    3
+    4
+    5
+    6
+    7
+    8
+    9
+ #+end_example
+
+** For
+#+begin_SRC bash
+#!/usr/bin/env bash
+
+# 1º example
+for number in 1 2 3 4 5
+do 
+    echo "$number"
+done
+
+# 2º example
+for number in {1..20} ; do # The number will start on 1 and end at 20
+    echo "$number"
+done
+
+# 3º example
+for number in {1..20..2} ; do # {starting..ending..increment}
+    echo "$number"
+done
+
+# 4ºexample (similar to c)
+for (( number=0; number<20; number++)) ; do
+    echo "$number"
+done
+#+end_SRC
+** Continue and Breaks
+*** Break
+#+begin_SRC bash
+#!/usr/bin/env bash
+
+for (( number=0; number<20; number++)) ; do
+    if (( $number > 10 )) ; then
+        break # Get out of the loop
+    fi
+    echo "$number"
+done
+#+end_SRC
+*** Continue
+#+begin_SRC bash
+#!/usr/bin/env bash
+
+for (( number=0; number<20; number++)) ; do
+    if (( $number > 10 )) ; then
+        continue # Jump to the next iteration.
+    fi
+    echo "$number"
+done
+#+end_SRC
+* Script input
+** Arguments
+#+begin_SRC bash
+#!/usr/bin/env bash
+
+# argument 0 it is the name of the script.
+# This will print the argument 1 to 3.
+echo $0 $1 $2 $3 
+
+# All arguments will be in args
+args=("$@") 
+
+# Print the 1º argument
+echo ${args[1]}
+
+echo  ${args[1]} ${args[2]} ${args[3]}
+
+# Print all the arguments
+echo $@
+
+# Print the number of arguments given
+echo $#
+#+end_SRC
+** Script
+#+begin_SRC bash
+#!/usr/bin/env bash
+
+while read line ; do
+      echo "$line"
+done < "${1:-/dev/stdin}"
+# This will write and print what you write on the prompt, if no argument is given.
+# If you give a name's file, this will print it.
+#+end_SRC
+* Script output
+** STDOUT STDERR
++ The > operator redirects the output usually to a file but it can be to a device. You can also use >> to append.
+
++ If you don't specify a number then the standard output stream is assumed, but you can also redirect errors:
+
++ > file redirects stdout to file
++ 1> file redirects stdout to file
+  -Nao apresenta os erros no file
+
++ 2> file redirects stderr to file
+  - Apresenta os erros
+
++ &> file redirects stdout and stderr to file
++ > file 2>&1 redirects stdout and stderr to file
+
++ /dev/null is the null device it takes any input you want and throws it away. It can be used to suppress any output.
+** Example
+#+begin_SRC bash
+#!/usr/bin/env bash
+
+ls -al 1>file1.txt
+
+ls +al >errors.txt 2>&1 # Will not print the erros. The errors will be on errors.txt
+
+ls -al &> file.txt
+#+end_SRC
+* Send output from one script to another script
+** Example
+#+begin_SRC bash
+#! usr/bin/env bash
+message="Something here"
+export message
+./second_script
+#+end_SRC
+* String Processing
+** Compare
+#+begin_SRC bash
+#!/usr/bin/env bash
+
+echo "Enter 1st string"
+read st1
+echo "Enter 2nd string"
+read st2
+
+if [ "$st1" == "$st2" ] ; then
+ echo "Then are equal"
+else
+   if [ "$st1" \< "$st2" ] ; then
+       echo "$st1 is smaller than $st2"
+   else
+       echo "$st2 is smaller than $st1"
+   fi
+fi      
+#+end_SRC
+** Concate 
+#+begin_SRC bash
+#!/usr/bin/env bash
+echo "Enter 1st string"
+read st1
+echo "Enter 2nd string"
+read st2
+
+c=$st1$st2
+echo $c
+#+end_SRC
+** Upper case
+#+begin_SRC bash
+#!/usr/bin/env bash
+echo "Enter 1st string"
+read st1
+echo "Enter 2nd string"
+read st2
+
+# Print the first letter in upper case
+echo ${st1^} 
+
+# Print the letter given in upper case only if this is the first's in the string
+echo ${st1^l} 
+
+# Print the string in upper case
+echo ${st2^^}
+#+end_SRC
+* Numbers and Arithmetic
+** Expressions
+#+begin_SRC bash
+#!/usr/bin/env bash
+
+# This will write the string
+echo 31+23
+n1=31
+n2=23
+
+echo $(expr $n1+$n2)
+
+# This will write the result
+echo $(expr $n1 + $n2)
+echo $(( 31+23 ))
+echo $(( 31-23 ))
+echo $(( 31*23 ))
+echo $(( 31/23 ))
+echo $(( 31%23 ))
+
+echo $(expr 12+20)
+#+end_SRC
+
+#+RESULTS:
+| 31+23 |
+| 31+23 |
+|    54 |
+|    54 |
+|     8 |
+|   713 |
+|     1 |
+|     8 |
+| 12+20 |
+** Hex
+#+begin_SRC bash
+#!/usr/bin/env bash
+echo "Enter Hex Number of your choice"
+read hex
+
+echo -n "The decimal value of $hex is :"
+echo "obase=10; ibase=16; $hex | bc" # ????
+#+end_SRC
+* Declare a comand
+** terminal
+#+begin_SRC bash
+#!/usr/bin/env bash
+# On terminal
+
+# show variavels
+declare -p
+
+declare myvariavel=22
+#+end_SRC
++ -r only read
+* Arrays
+#+begin_SRC bash
+#!/usr/bin/env bash
+
+car=('Bwn' 'Toyota' 'Honda' 'Jipe')
+
+echo "${car[@]}"
+
+# Print element number one
+echo "${car[1]}"
+
+# Print the number of all elements
+echo "${!car[@]}"
+
+# Print the number of elements
+echo "${#car[@]}"
+
+echo
+# delete Honda
+unset car[2]
+echo "${car[@]}"
+echo "${!car[@]}"
+echo "${#car[@]}"
+
+# Add a  new element after deletef
+car[2]='Mercedes'
+echo "${car[@]}"
+#+end_SRC
+
+#+RESULTS:
+|    Bwn | Toyota | Honda    | Jipe |
+| Toyota |        |          |      |
+|      0 | 1      | 2        | 3    |
+|      4 |        |          |      |
+|        |        |          |      |
+|    Bwn | Toyota | Jipe     |      |
+|      0 | 1      | 3        |      |
+|      3 |        |          |      |
+|    Bwn | Toyota | Mercedes | Jipe |
+* Functions
+** Begin
+#+begin_SCR bash
+#!usr/bin/env bash
+
+function myfunction() {
+    echo "This is new funtions"
+}
+
+function funcprint(){
+   echo "$1"
+}
+
+# Call a function
+myfunction
+
+funcprint oi
+#+end_SCR
+** Check function
+#+begin_SRC bash
+#!/usr/bin/env bash
+
+function checkF(){
+    # This is a local variavel
+    returnValue="I love Linux"        
+}
+
+# This is a global variavel
+returnValue="I love Mac"
+echo $returnValue
+
+checkF
+echo $returnValue
+#+end_SRC
+
+#+RESULTS:
+| I | love | Mac   |
+| I | love | Linux |
+* Files and Directories
+** Create a new Folder
+#+begin_SRC bash
+#!/usr/bin/env bash
+
+echo "Enter a directory name to check"
+read directory
+
+if [ -d "$directory" ] ; then
+    echo "$directory already exists"
+else
+    echo "New folder : $directory"
+    # Creat a folder
+    mkdir -p myfolder
+fi
+#+end_SRC
+** Create a file
+#+begin_SRC bash
+#!usr/bin/env bash
+
+echo "Enter the name to create"
+read file
+
+if [ -f "$file" ] ; then
+    echo "$file already exist"
+else
+    echo "New file : $file"
+    touch file
+fi
+#+end_SRC
+** Added text on a file
+#+begin_SRC bash
+#!usr/bin/env bash
+
+echo "Enter the file name"
+read file
+
+if [ -f "$file" ] ; then
+    echo "Write the text that you wnat to append"
+    read text
+    echo "$file already exist"
+    echo "$text" >> $file
+else
+    echo "$file dont exist"
+fi
+#+end_SRC
+** Read a file
+#+begin_SRC bash
+#!usr/bin/env bash
+
+echo "Enter the file name"
+read file
+
+if [ -f "$file" ] ; then
+    #while IFS=""
+    while IFS= read -r line ; do
+        echo "$line"
+    done < $file
+else
+    echo "$file dont exist"
+fi
+#+end_SRC
+* Sending email via script
+** Easy way
+#+begin_SRC bash
+#!usr/bin/env bash
+# you need hava install ssmtp
+# Make the settings
+
+ssmtp email..
+# Prompt:
+: '
+To: ...
+From: ...
+Cc: ...
+Subject: ....
+this is boddy
+'
+#+end_SRC
+* Curl in scripts
+#+begin_SRC bash
+#!usr/bin/env bash
+url="https://www.youtube.com/"
+# its like cat
+curl ${url} 
+
+# Download with original name
+curl ${url} -O
+# Download with other name
+curl ${url} > file_name
+curl ${url} -o file_name
+
+# Cheack header
+curl -I ${url}
+#+end_SRC
+* Professional menus
+** with select
+#+begin_SRC bash
+#!usr/bin/env bash
+
+echo 
+select car in BWM MERCEDES TESLA ROVER TOYOTA  EXIT
+do
+    case $car in
+        BWM)
+            echo "$car selected"
+            ;;
+        MERCEDES)
+            echo "$car selected"
+            ;;
+        TESLA)
+            echo "$car selected"
+            ;;
+        ROVER)
+            echo "$car selected"
+            ;;
+        TOYOTA)
+            echo "$car selected"
+            ;;
+        EXIT)
+            exit;;
+        ,*)
+            echo "Please select btweem 1..6" 
+        esac
+done
+#+end_SRC
+** Press a key
+#+begin_SRC bash
+#!usr/bin/env bash
+
+echo "press any key to continue"
+
+while [ true ] ; do
+    read -t 3 -n 1
+if [ $? = 0 ] ; then
+    echo
+    echo "You have terminated the script"
+    exit;
+else
+    echo "waiting for you to press the key"
+fi
+done
+#+end_SRC
+* Wait for filesystem events with inotify
+#+begin_SRC bash
+#!usr/bin/env bash
+mkdir /tmp/try
+# give you some information
+inotifywait -m /tmp/try
+
+# run script and in other terminal do change in that folder
+#+end_SRC
+* Grep
+#+begin_SRC bash
+# give you the lines that have "Something" write
+cat file | grep "Something"
+# This is the same 
+grep "Something" file 
+
+# remove the case sensibility
+grep -i "Something" file 
+
+# give the numner of the line
+grep -i -n "Something" file 
+
+# Gives to you the number off the ocurrences
+grep -i -n -c "Something" file
+
+# Gives you all the lines without that text
+grep -i -n -v "Something" file        
+
+# man grep -> this is a good command
+#+end_SRC
+* Awk
+#+begin_SRC bash
+#!/usr/bin/env bash
+echo "Enter the filename to print from awk"
+read file
+
+if [[ -f "$file" ]] ; then
+    awk '{print}' $file 
+
+    echo
+    # This will print the lines with the word "file"
+    awk '/file/ {print}' $file 
+
+    echo
+    # This will print the second word of the line that have the word "file"
+    awk '/file/ {print $2}' $file 
+    
+    awk '/file/ {print $2,$3}' $file 
+else
+    echo "$file doens't exist"
+fi
+#+end_SRC
+* SED
+** File
+#+begin_export ascii
+This is Linux 3000
+This is Mac 4000
+This is Windowns 5000
+#+end_export
+** code
+#+begin_SRC bash
+#!usr/bin/env bash
+echo "Enter the filename to susbtitute using sed"
+read file
+
+if [[ -f "$file" ]] ; then
+    # This change the first 'i' to 'I' in all lines
+    cat $file | sed 's/i/I' > $file
+    # This is the same
+    # sed -i 's/i/I' $file
+    
+    # This change the 'i' to 'I' in all lines
+    cat $file | sed 's/i/I/g' > $file
+    
+    cat $file | sed 's/Mac/Apple/g' > $file
+else
+    echo "$file doens't exist"
+fi
+#+end_SRC
+** File after run script
+#+begin_export ascii
+ThIs Is LInux 3000
+ThIs Is Apple 4000
+ThIs Is WIndowns 5000
+#+end_export
+* Debugging Bash Scripts
+** bash -x script
+This will show the code, step by step, informing you if the line was executed or not.
+*** All script
+#+begin_SRC bash
+#!usr/bin/env bash -x
+.... code  .....
+#+end_SRC
+*** Between lines
+#+begin_SRC bash
+#!usr/bin/env bash
+
+set -x
+.... code  ..... # This will be the code that you will analyzed.
+set +x
+.... code  .....
+#+end_SRC
+
