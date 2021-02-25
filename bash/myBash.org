@@ -121,7 +121,7 @@ esac
 
 
 #+end_SRC
-* Loops
+* Loopse
 ** While
 *** while
 While the condiction it's true do something
@@ -248,22 +248,6 @@ for (( number=0; number<20; number++)) ; do
     echo "$number"
 done
 #+end_SRC
-* Script input
-** Arguments
-#+begin_SRC bash
-#!/usr/bin/env bash
-
-# argument 0 it is the name of the script.
-# This will print the argument 1 to 3.
-echo $0 $1 $2 $3 
-
-# All arguments will be in args
-args=("$@") 
-
-# Print the 1º argument
-echo ${args[1]}
-
-echo  ${args[1]} ${args[2]} ${args[3]}
 
 # Print all the arguments
 echo $@
@@ -616,7 +600,7 @@ do
             ;;
         EXIT)
             exit;;
-        ,*)
+        *)
             echo "Please select btweem 1..6" 
         esac
 done
@@ -739,5 +723,11 @@ set -x
 .... code  ..... # This will be the code that you will analyzed.
 set +x
 .... code  .....
+#+end_SRC
+* More
+** Correct unexpected end of a file
+#+begin_SRC bash
+#!/bin/bash
+dos2unix file.sh
 #+end_SRC
 
