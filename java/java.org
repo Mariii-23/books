@@ -1,0 +1,37 @@
+#+TITLE: Java
+
+* Encapsulamento
++ vem de encapsular, que significa separar o programa em partes, o mais isoladas possíveis
++ dizendo de outra forma, é uma forma de tornar visível para o usuário as funcionalidades que são importantes para o sistema e somente para o sistema
+
+* Classes e subclasses
+#+begin_example
+        | <- C
+A <- B  |
+        | <- D
+#+end_example
+
++ A é superclasse de B
++ C é subclasse de B
+** A é um B... isso significa q A é do tipo B, ou seja A é uma subclasse de B
+* HERDAR != TER ACESSO
+* Propriedade da extensibilidade
+Garantia da continuidade de codigo, e não da sua caducacidade, apesar das várias modificações que, posteriormente, possam ser introduzidas na estrutura da informaçºao do problema.
+* ORDEM
++ Constantes da classe
++ Variaveis da classe
++ Metodos da classe
+
++ Variaveis de instancia
++ Construtores
++ Metodos de instancia public
++ Metodos que implementem interface
++ Metodos protected e private
++ Outros membros das classes
+
+* Classes abstratas
++ As classes abstratas tem a missao particular de implementar parcialmente metodos genericos aplicaveis a todas as suas subclasses ou realizar inicialiacoes
++ As classes abstratas sao fundamentais para uma imolementacao efetiva do poliformismo, dado serem super-tipos, pertencentes a hierarquia de classes, que garantem compatibilidade via substituicao e de heranca, com as suas diversas classes.
+* Interfaces
++ especificacoes do tipo de dados
++ Sao uteis sempre que pretendermos garantir que duas classes posicionadas em quaisquer zonas da hierarquia de classes, que podem ou nao ter qualquer relacao hierarquia entre si, possuam um comportamento que e sintaticamente comum, isto e, implementem um dado comportamento (metodos) definidos numa ou mais interfaces.
