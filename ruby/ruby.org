@@ -1,0 +1,56 @@
+#+TITLE: Ruby
+
+#+begin_SRC ruby
+puts "Hello World!!"
+
+# array={1,2,3,4}
+
+# array.each do |elem|
+#   puts elem
+# end
+
+hash={a: 1,b: 2,c: 2}
+hash[:a] #->1
+
+hash.each do |key, value|
+  puts key value
+end
+
+# metodos
+def hello
+  "hello ruby"
+end
+
+hello
+hello()
+
+def sum(a,b)
+  a+b
+end
+
+sum 2,3
+sum(2,3)
+
+#+end_SRC
+
+#+RESULTS:
+* String and Symbol
+usar symbol e nao strings
+* The return keywod is not mandatory -  the value of the last word
+* class
+#+begin_SRC ruby
+class veiculo
+  attr_reader kmn
+
+  def initialize(brand="Fiat",model "500")
+    @brand = brand
+    @model = model
+    @kms = 0
+  end
+
+  def start
+    puts "Vrommm"
+  end
+end
+
+#+end_SRC
