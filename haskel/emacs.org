@@ -1,0 +1,8 @@
+#+TITLE: Haskell on Emacs
+
+* Commands:
++ "C-c C-z"
+   get to the Haskell REPL
++ "C-c C-l"
+  load the file's contents into the REPL
+  "C-c C-z" over to the repl again

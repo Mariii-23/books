@@ -121,7 +121,7 @@ esac
 
 
 #+end_SRC
-* Loopse
+* Loops
 ** While
 *** while
 While the condiction it's true do something
