@@ -1253,7 +1253,395 @@ pub fn eat_at_restaurant() {
 }
 #+end_src
 ** Bringing Paths into Scope with the use Keyword
+#+begin_src rust
+mod front_of_house {
+    pub mod hosting {
+        pub fn add_to_waitlist() {}
+    }
+}
+
+use crate::front_of_house::hosting;
+
+pub fn eat_at_restaurant() {
+    hosting::add_to_waitlist();
+    hosting::add_to_waitlist();
+    hosting::add_to_waitlist();
+}
+#+end_src
+ or
+#+begin_src rust
+mod front_of_house {
+    pub mod hosting {
+        pub fn add_to_waitlist() {}
+    }
+}
+
+use self::front_of_house::hosting;
+
+pub fn eat_at_restaurant() {
+    hosting::add_to_waitlist();
+    hosting::add_to_waitlist();
+    hosting::add_to_waitlist();
+}
+#+end_src
+
+*** Creating idiomatic use Paths
+#+begin_src rust
+mod front_of_house {
+    pub mod hosting {
+        pub fn add_to_waitlist() {}
+    }
+}
+
+use crate::front_of_house::hosting::add_to_waitlist;
+
+pub fn eat_at_restaurant() {
+    add_to_waitlist();
+    add_to_waitlist();
+    add_to_waitlist();
+}
+#+end_src
+
+
+#+begin_src rust
+use std::fmt;
+use std::io;
+
+fn function1() -> fmt::Result {
+    // --snip--
+    Ok(())
+}
+
+fn function2() -> io::Result<()> {
+    // --snip--
+    Ok(())
+}
+#+end_src
+*** Providing new names with the as Keyword
+#+begin_src rust
+use std::fmt::Result;
+use std::io::Result as IoResult;
+
+fn function1() -> Result {
+    // --snip--
+    Ok(())
+}
+
+fn function2() -> IoResult<()> {
+    // --snip--
+    Ok(())
+}
+#+end_src
+
+*** Re-exporting names with pub used
+#+begin_src rust
+mod front_of_house {
+    pub mod hosting {
+        pub fn add_to_waitlist() {}
+    }
+}
+
+pub use crate::front_of_house::hosting;
+
+pub fn eat_at_restaurant() {
+    hosting::add_to_waitlist();
+    hosting::add_to_waitlist();
+    hosting::add_to_waitlist();
+}
+#+end_src
+By using pub use, external code can now call the add_to_waitlist function using hosting::add_to_waitlist. If we hadn’t specified pub use, the eat_at_restaurant function could call hosting::add_to_waitlist in its scope, but external code couldn’t take advantage of this new path.
+
+*** Using Nested Paths to clean up latge use lists
+#+begin_src rust
+// --snip--
+use std::cmp::Ordering;
+use std::io;
+// --snip--
+
+// instead
+
+// --snip--
+use std::{cmp::Ordering, io};
+// --snip--
+#+end_src
+
+#+begin_src rust
+use std::io;
+use std::io::Write;
+
+// instead
+
+use std::io::{self, Write};
+#+end_src
+*** The Glob Operator
+#+begin_src rust
+use std::collections::*;
+#+end_src
+
+** Separating Modules into different files
+Filename: src/lib.rs
+#+begin_src rust
+mod front_of_house;
+
+pub use crate::front_of_house::hosting;
+
+pub fn eat_at_restaurant() {
+    hosting::add_to_waitlist();
+    hosting::add_to_waitlist();
+    hosting::add_to_waitlist();
+}
+#+end_src
+Filename: src/front_of_house.rs
+#+begin_src rust
+pub mod hosting;
+
+pub mod hosting {
+    pub fn add_to_waitlist() {}
+}
+#+end_src
+
+* Common Collections
+Documentation
+https://doc.rust-lang.org/std/collections/index.html
+
+** Storing Lists of Values with Vectors
+*** Creating a new Vector
+#+begin_src rust
+let v: Vec<i32> = Vec::new();
+// or
+let v = vec![1, 2, 3];
+#+end_src
+*** Updating a Vector
+#+begin_src rust
+let mut v = Vec::new();
+
+v.push(5);
+v.push(6);
+v.push(7);
+v.push(8);
+#+end_src
+
+*** Dropping a Vector Drops Its Elements
+#+begin_src rust
+{
+    let v = vec![1, 2, 3];
+    // do stuff with v
+} // <- v goes out of scope and is freed here
+#+end_src
+*** Reading Elements of Vectors
+#+begin_src rust
+fn main() {
+    let v = vec![1, 2, 3, 4, 5];
+
+    let second: &i32 = &v[1];
+    let third: &i32 = &v[2];
+    println!("The second element is {}", second);
+    println!("The third element is {}", third);
+
+    match v.get(2) {
+        Some(third) => println!("The third element is {}", third),
+        None => println!("There is no third element."),
+    }
+}
+#+end_src
+
+#+RESULTS:
+: The second element is 2
+: The third element is 3
+: The third element is 3
+When the get method is passed an index that is outside the vector, it returns None without panicking. You would use this method if accessing an element beyond the range of the vector happens occasionally under normal circumstances. Your code will then have logic to handle having either Some(&element) or None.
+*** Iterating over the Values in a Vector
+#+begin_src rust
+fn main() {
+    let v = vec![100, 32, 57];
+    for i in &v {
+        println!("{}", i);
+    }
+
+    // or
+    let mut v = vec![100, 32, 57];
+    for i in &mut v {
+        *i += 50;
+    }
+}
+#+end_src
+*** Using an Enum to Store Multiple Types
+#+begin_src rust
+fn main() {
+    enum SpreadsheetCell {
+        Int(i32),
+        Float(f64),
+        Text(String),
+    }
+
+    let row = vec![
+        SpreadsheetCell::Int(3),
+        SpreadsheetCell::Text(String::from("blue")),
+        SpreadsheetCell::Float(10.12),
+    ];
+}
+#+end_src
+** Storing UTF-8 Encoded Text with Strings
+Rust’s standard library also includes a number of other string types, such as OsString, OsStr, CString, and CStr. Library crates can provide even more options for storing string data. See how those names all end in String or Str? They refer to owned and borrowed variants, just like the String and str types you’ve seen previously. These string types can store text in different encodings or be represented in memory in a different way, for example.
+
+*** Creating a new string
+#+begin_src rust
+let mut s = String::new();
+
+let data = "initial contents";
+let s = data.to_string();
+
+// the method also works on a literal directly:
+let s = "initial contents".to_string();
+
+let s = String::from("initial contents");
+#+end_src
+*** Appending to a String with push_str and push
+#+begin_src rust
+fn main() {
+    let mut s1 = String::from("foo");
+    let s2 = "bar";
+    s1.push_str(s2);
+    println!("s2 is {}", s2);
+    println!("s1 is {}", s1);
+
+    let mut s = String::from("foo");
+    s.push_str("bar");
+    println!("s is {}", s);
+
+
+    let mut s = String::from("lo");
+    s.push('l');
+    println!("s is {}", s);
+
+}
+#+end_src
+
+#+RESULTS:
+: s2 is bar
+: s1 is foobar
+: s is foobar
+: s is lol
+*** Concatenation with + Operator or the format! Macro
+#+begin_src rust
+fn main() {
+    let s1 = String::from("Hello, ");
+    let s2 = String::from("world!");
+    let s3 = s1 + &s2; // note s1 has been moved here and can no longer be used
+    println!("s is {}", s3);
+}
+#+end_src
+
+#+RESULTS:
+: s is Hello, world!
+
+#+begin_src rust
+fn main() {
+    let s1 = String::from("tic");
+    let s2 = String::from("tac");
+    let s3 = String::from("toe");
+
+    let s = s1 + "-" + &s2 + "-" + &s3;
+    println!("s is {}", s);
+}
+#+end_src
+
+#+RESULTS:
+: s is tic-tac-toe
+: s is toe
+: s is tac
+
+or:
+#+begin_src rust
+fn main() {
+    let s1 = String::from("tic");
+    let s2 = String::from("tac");
+    let s3 = String::from("toe");
+
+    let s = format!("{}-{}-{}", s1, s2, s3);
+    println!("s is {}", s);
+}
+#+end_src
+
+#+RESULTS:
+: s is tic-tac-toe
+: s is toe
+: s is tac
+
+This code also sets s to tic-tac-toe. The format! macro works in the same way as println!, but instead of printing the output to the screen, it returns a String with the contents. The version of the code using format! is much easier to read and doesn’t take ownership of any of its parameters.
+
+*** Indexing into Strings
+In many other programming languages, accessing individual characters in a string by referencing them by index is a valid and common operation. However, if you try to access parts of a String using indexing syntax in Rust, you’ll get an error.
+
+*** Bytes and Scalar Values and Grapheme Clusters! Oh My!
+Another point about UTF-8 is that there are actually three relevant ways to look at strings from Rust’s perspective: as bytes, scalar values, and grapheme clusters (the closest thing to what we would call letters).
+
+
+If we look at the Hindi word “नमस्ते” written in the Devanagari script, it is stored as a vector of u8 values that looks like this:
+#+begin_example
+[224, 164, 168, 224, 164, 174, 224, 164, 184, 224, 165, 141, 224, 164, 164,
+224, 165, 135]
+#+end_example
+
+That’s 18 bytes and is how computers ultimately store this data. If we look at them as Unicode scalar values, which are what Rust’s char type is, those bytes look like this:
+#+begin_example
+['न', 'म', 'स', '्', 'त', 'े']
+#+end_example
+There are six char values here, but the fourth and sixth are not letters: they’re diacritics that don’t make sense on their own. Finally, if we look at them as grapheme clusters, we’d get what a person would call the four letters that make up the Hindi word:
+#+begin_example
+["न", "म", "स्", "ते"]
+#+end_example
+Rust provides different ways of interpreting the raw string data that computers store so that each program can choose the interpretation it needs, no matter what human language the data is in.
+
+*** Slicing Strings
+Indexing into a string is often a bad idea because it’s not clear what the return type of the string-indexing operation should be: a byte value, a character, a grapheme cluster, or a string slice. Therefore, Rust asks you to be more specific if you really need to use indices to create string slices. To be more specific in your indexing and indicate that you want a string slice, rather than indexing using [] with a single number, you can use [] with a range to create a string slice containing particular bytes:
+#+begin_src rust
+let hello = "Здравствуйте";
+
+let s = &hello[0..4];
+#+end_src
+
+*** Methods for Iterating Over Strings
+#+begin_src rust
+#![allow(unused)]
+fn main() {
+for c in "नमस्ते".chars() {
+    println!("{}", c);
+}
+}
+#+end_src
+
+#+RESULTS:
+: न
+: म
+: स
+: ्
+: त
+: े
+
+#+begin_src rust
+#![allow(unused)]
+fn main() {
+for b in "नमस्ते".bytes() {
+    println!("{}", b);
+}
+}
+#+end_src
+
+#+RESULTS:
+#+begin_example
+224
+164
+# -- snip --
+165
+135
+#+end_example
+
+** Storing Keys with Associated Values in Hash Maps
 
 * Some notes
 ** Documentation provided by all of dependencies locally
  You won’t just know which traits to use and which methods and functions to call from a crate. Instructions for using a crate are in each crate’s documentation. Another neat feature of Cargo is that you can run the cargo doc --open command, which will build documentation provided by all of your dependencies locally and open it in your browser. If you’re interested in other functionality in the rand crate, for example, run cargo doc --open and click rand in the sidebar on the left.
+* Documenation:
+- [[https://doc.rust-lang.org/std/option/enum.Option.html][Classe OPTION]]
+- [[https://doc.rust-lang.org/std/collections/index.html][Common Collections]]
